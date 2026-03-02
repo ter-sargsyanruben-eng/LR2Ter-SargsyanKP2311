@@ -1,9 +1,27 @@
-[project]
-name = "python-template"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
-requires-python = ">=3.11"
-dependencies = [
-    "flask>=3.1.3",
-]
+from sympy import symbols
+
+k, T, C, L = symbols('k C T L')
+
+initial_cost = 100000
+useful_life = 5
+salvage_value = 0
+
+remaining_cost = initial_cost
+amortization_list = []
+remaining_cost_list = []
+
+for i in range(useful_life):
+    annual_amortization = (C - L) / T
+    amortization_value = float(annual_amortization.subs({
+        C: initial_cost,
+        T: useful_life,
+        L: salvage_value
+    }))
+
+    remaining_cost -= amortization_value
+
+    amortization_list.append(round(amortization_value, 2))
+    remaining_cost_list.append(round(remaining_cost, 2))
+
+print('Am_list:', amortization_list)
+print('C_cost_list:', remaining_cost_list)
