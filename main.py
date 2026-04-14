@@ -1,110 +1,99 @@
-# задание 1
+#ИНДИВИДУАЛЬНОЕ ЗАДАНИЕ 1
+'''
+import os
 
-from sympy import symbols
+print("Проверка секретных ключей:")
+print("API_KEY:", os.getenv("API_KEY"))
+print("JWT_SECRET:", os.getenv("JWT_SECRET"))
+print("LOG_TOKEN:", os.getenv("LOG_TOKEN"))
+print("GRID_NODE_ID:", os.getenv("GRID_NODE_ID"))
+print("ALERT_SECRET:", os.getenv("ALERT_SECRET"))
+'''
 
-k, T, C, L = symbols('k C T L')
-C_ost = 100000
-Am_list = []
-C_ost_list = []
-for i in range(5):
-    Am = (C - L) / T
-    C_ost -= Am.subs({C: 100000, T: 5, L: 0})
-    Am_list.append(round(Am.subs({C: 100000, T: 5, L: 0}), 2))
-    C_ost_list.append(round(C_ost, 2))
-print('Am_list:', Am_list)
-print('C_ost_list:', C_ost_list)
-
-# задание 2
-Aj = 0
-Cost = 100000
-Am_list_2 = []
-C_ost_list_2 = []
-for i in range(5):
-    Am = k * 1 / T * (C - Aj)
-    Cost -= Am.subs({C: 100000, T: 5, k: 2})
-    Am_list_2.append(round(Am.subs({C: 100000, T: 5, k: 2}), 2))
-    Aj += Am
-    C_ost_list_2.append(round(Cost, 2))
-print('Am_list_2:', Am_list_2)
-print('C_ost_list_2:', C_ost_list_2)
-
-#задание 3
-import pandas as pd
-
-Y = range(1, 6)
-table1 = list(zip(Y, C_ost_list, Am_list))
-table2 = list(zip(Y, C_ost_list_2, Am_list_2))
-tfame = pd.DataFrame(table1, columns=['Y', 'C_ost_list', 'Am_list'])
-tfame2 = pd.DataFrame(table2, columns=['Y', 'C_ost_list_2', 'Am_list_2'])
-print(tfame)
-print(tfame2)
-
-from sympy import symbols
+#ИНДИВИДУАЛЬНОЕ ЗАДАНИЕ 2
 import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+matplotlib.use("Agg")
+
 import pandas as pd
+import matplotlib.pyplot as plt
 
-k, T, C, L = symbols('k C T L')
+# входные данные
+requests_data = [10, 15, 20, 50, 120, 200, 80, 60, 30, 10]
 
+status = []
 
+# расчет
+for r in requests_data:
+    if r < 50:
+        status.append("Норма")
+    elif r < 100:
+        status.append("Подозрительно")
+    else:
+        status.append("Атака")
 
+# таблица
+time = list(range(1, len(requests_data) + 1))
+table = list(zip(time, requests_data, status))
+df = pd.DataFrame(table, columns=["Время", "Запросы", "Статус"])
 
-plt.figure(figsize=(15, 10))
+print("Анализ нагрузки:")
+print(df)
+print()
 
-
-plt.subplot(2, 3, 1)
-plt.plot(tfame['Y'], tfame['C_ost_list'], 'bo-', linewidth=2, markersize=8)
-plt.title('C_ost_list от Y (метод 1)')
-plt.xlabel('Y')
-plt.ylabel('C_ost_list')
-plt.grid(True)
-
-
-plt.subplot(2, 3, 2)
-plt.plot(tfame['Y'], tfame['Am_list'], 'rs-', linewidth=2, markersize=8)
-plt.title('Am_list от Y (метод 1)')
-plt.xlabel('Y')
-plt.ylabel('Am_list')
-plt.grid(True)
-
-
-plt.subplot(2, 3, 3)
-plt.plot(tfame['Y'], tfame['C_ost_list'], 'bo-', label='C_ost_list')
-plt.plot(tfame['Y'], tfame['Am_list'], 'rs-', label='Am_list')
-plt.title('Сравнение (метод 1)')
-plt.xlabel('Y')
-plt.ylabel('Значения')
+# линейный график нагрузки
+plt.figure(figsize=(10, 6))
+plt.plot(df["Время"], df["Запросы"], marker="o", label="Нагрузка")
+plt.axhline(50, linestyle="--", label="Порог подозрительности")
+plt.axhline(100, linestyle="--", label="Порог атаки")
+plt.xlabel("Время")
+plt.ylabel("Запросы")
+plt.title("Линейный график нагрузки")
 plt.legend()
 plt.grid(True)
+plt.savefig("line_chart.png", dpi=100, bbox_inches="tight")
+plt.close()
 
-
-plt.subplot(2, 3, 4)
-plt.plot(tfame2['Y'], tfame2['C_ost_list_2'], 'go-', linewidth=2, markersize=8)
-plt.title('C_ost_list_2 от Y (метод 2)')
-plt.xlabel('Y')
-plt.ylabel('C_ost_list_2')
+# столбчатая диаграмма
+plt.figure(figsize=(10, 6))
+plt.bar(df["Время"], df["Запросы"])
+plt.xlabel("Время")
+plt.ylabel("Запросы")
+plt.title("Столбчатая диаграмма нагрузки")
 plt.grid(True)
+plt.savefig("bar_chart.png", dpi=100, bbox_inches="tight")
+plt.close()
 
+# круговая диаграмма
+counts = df["Статус"].value_counts()
+plt.figure(figsize=(8, 8))
+plt.pie(counts.values, labels=counts.index, autopct="%1.1f%%")
+plt.title("Распределение состояний нагрузки")
+plt.savefig("pie_chart.png", dpi=100, bbox_inches="tight")
+plt.close()
 
-plt.subplot(2, 3, 5)
-plt.plot(tfame2['Y'], tfame2['Am_list_2'], 'ms-', linewidth=2, markersize=8)
-plt.title('Am_list_2 от Y (метод 2)')
-plt.xlabel('Y')
-plt.ylabel('Am_list_2')
-plt.grid(True)
+# сравнительный линейный график
+normal = [r if r < 50 else 0 for r in requests_data]
+suspicious = [r if 50 <= r < 100 else 0 for r in requests_data]
+attack = [r if r >= 100 else 0 for r in requests_data]
 
-
-plt.subplot(2, 3, 6)
-plt.plot(tfame2['Y'], tfame2['C_ost_list_2'], 'go-', label='C_ost_list_2')
-plt.plot(tfame2['Y'], tfame2['Am_list_2'], 'ms-', label='Am_list_2')
-plt.title('Сравнение (метод 2)')
-plt.xlabel('Y')
-plt.ylabel('Значения')
+plt.figure(figsize=(10, 6))
+plt.plot(time, normal, marker="o", label="Норма")
+plt.plot(time, suspicious, marker="s", label="Подозрительно")
+plt.plot(time, attack, marker="^", label="Атака")
+plt.xlabel("Время")
+plt.ylabel("Запросы")
+plt.title("Сравнение состояний нагрузки")
 plt.legend()
 plt.grid(True)
+plt.savefig("compare_chart.png", dpi=100, bbox_inches="tight")
+plt.close()
 
-plt.tight_layout()
-plt.savefig('output.png')
-print('Plot saved to output.png')
-#индивидуальная задача. Вариант 1
+print("Графики успешно сохранены:")
+print("line_chart.png")
+print("bar_chart.png")
+print("pie_chart.png")
+print("compare_chart.png")
+
+#ИНДИВИДУАЛЬНОЕ ЗАДАНИЕ 5
+
+requests = [5, 10, 20, 80, 150, 300, 250, 100, 40, 10]
