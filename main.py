@@ -18,7 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # входные данные
-requests_data = [10, 15, 20, 50, 120, 200, 80, 60, 30, 10]
+requests_data = [5, 10, 20, 80, 150, 300, 250, 100, 40, 10]
 
 status = []
 
@@ -95,5 +95,5 @@ print("pie_chart.png")
 print("compare_chart.png")
 
 #ИНДИВИДУАЛЬНОЕ ЗАДАНИЕ 5
-
-requests = [5, 10, 20, 80, 150, 300, 250, 100, 40, 10]
+#поменяли строку
+#requests = [5, 10, 20, 80, 150, 300, 250, 100, 40, 10]
